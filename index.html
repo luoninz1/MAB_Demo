@@ -146,14 +146,14 @@
         .machines-container {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             margin-bottom: 30px;
             flex-wrap: wrap;
         }
 
         .machine {
             flex: 1;
-            min-width: 280px;
+            min-width: 0;
             max-width: 450px;
             background: linear-gradient(145deg, #f0f0f0, #ffffff);
             border-radius: 15px;
@@ -163,9 +163,38 @@
             transition: transform 0.3s;
         }
         
+        /* Small screens - reduce padding and gap */
         @media (max-width: 768px) {
+            .machines-container {
+                gap: 10px;
+            }
+            
+            .machine {
+                padding: 20px 10px;
+            }
+        }
+        
+        /* Extra small screens - reduce further but still keep horizontal */
+        @media (max-width: 600px) {
+            .machines-container {
+                gap: 8px;
+            }
+            
+            .machine {
+                padding: 15px 8px;
+            }
+        }
+        
+        /* Very small screens - stack vertically */
+        @media (max-width: 400px) {
+            .machines-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
             .machine {
                 min-width: 100%;
+                max-width: 100%;
                 padding: 20px 15px;
             }
         }
