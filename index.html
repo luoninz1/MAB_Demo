@@ -341,9 +341,39 @@
             background: #5a6268;
             transform: translateY(-2px);
         }
+
+        /* Screen flash overlay */
+        .screen-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+
+        .screen-flash.flash-green {
+            background-color: rgba(40, 167, 69, 0.6);
+            animation: flashEffect 0.5s ease-out;
+        }
+
+        .screen-flash.flash-red {
+            background-color: rgba(220, 53, 69, 0.6);
+            animation: flashEffect 0.5s ease-out;
+        }
+
+        @keyframes flashEffect {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            100% { opacity: 0; }
+        }
     </style>
 </head>
 <body>
+    <div class="screen-flash" id="screenFlash"></div>
     <div class="container">
         <h1>🎰 Multi-Armed Bandit Game 🎰</h1>
         <p class="subtitle">Two slot machines with different win probabilities. Can you maximize your reward?</p>
@@ -449,6 +479,28 @@
 
         const symbols = ['🍒', '🍋', '🍊', '🍉', '⭐', '💎', '7️⃣'];
 
+        function flashScreen(isWin) {
+            const flashElement = document.getElementById('screenFlash');
+            
+            // Remove any existing flash classes
+            flashElement.classList.remove('flash-green', 'flash-red');
+            
+            // Trigger reflow to restart animation
+            void flashElement.offsetWidth;
+            
+            // Add the appropriate flash class
+            if (isWin) {
+                flashElement.classList.add('flash-green');
+            } else {
+                flashElement.classList.add('flash-red');
+            }
+            
+            // Remove the class after animation completes
+            setTimeout(() => {
+                flashElement.classList.remove('flash-green', 'flash-red');
+            }, 500);
+        }
+
         function pullMachine(machineNum) {
             if (gameState.pullsRemaining <= 0) {
                 return;
@@ -523,6 +575,9 @@
                             machine.wins++;
                             gameState.totalReward++;
                         }
+                        
+                        // Trigger screen flash based on win/loss
+                        flashScreen(win);
                         
                         gameState.pullsRemaining--;
                         updateDisplay();
