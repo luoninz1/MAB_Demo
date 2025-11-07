@@ -24,17 +24,36 @@
         .container {
             background: white;
             border-radius: 20px;
-            padding: 40px;
+            padding: 40px 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 900px;
+            max-width: 1100px;
             width: 100%;
+            overflow-x: hidden;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 10px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                padding: 40px;
+            }
         }
 
         h1 {
             text-align: center;
             color: #333;
             margin-bottom: 10px;
-            font-size: 2.5em;
+            font-size: 1.8em;
+        }
+        
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
         }
 
         .subtitle {
@@ -126,19 +145,29 @@
 
         .machines-container {
             display: flex;
-            justify-content: space-around;
-            gap: 30px;
+            justify-content: center;
+            gap: 20px;
             margin-bottom: 30px;
+            flex-wrap: wrap;
         }
 
         .machine {
             flex: 1;
+            min-width: 280px;
+            max-width: 450px;
             background: linear-gradient(145deg, #f0f0f0, #ffffff);
             border-radius: 15px;
-            padding: 30px;
+            padding: 30px 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             text-align: center;
             transition: transform 0.3s;
+        }
+        
+        @media (max-width: 768px) {
+            .machine {
+                min-width: 100%;
+                padding: 20px 15px;
+            }
         }
 
         .machine:hover {
@@ -158,7 +187,8 @@
         }
 
         .slot-machine {
-            width: 220px;
+            width: 100%;
+            max-width: 220px;
             background: linear-gradient(145deg, #ff6b6b, #ee5a6f);
             border-radius: 15px;
             margin: 0 auto 20px;
@@ -166,6 +196,13 @@
             box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.2), 0 10px 30px rgba(0, 0, 0, 0.3);
             cursor: pointer;
             transition: all 0.3s;
+        }
+        
+        @media (max-width: 768px) {
+            .slot-machine {
+                max-width: 200px;
+                padding: 15px 10px;
+            }
         }
 
         .machine:nth-child(2) .slot-machine {
@@ -202,6 +239,13 @@
             overflow: hidden;
             position: relative;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .reel {
+                height: 70px;
+                font-size: 38px;
+            }
         }
 
         .reel-symbol {
