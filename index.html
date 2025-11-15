@@ -959,9 +959,8 @@
 
         function endGame() {
             const resultMessage = document.getElementById('resultMessage');
-            const avgReward = gameState.totalReward / gameState.totalPulls;
             
-            // Determine which machine was better
+            // Determine which machine was better (oracle policy)
             const betterMachineIndex = gameState.machines[0].prob > gameState.machines[1].prob ? 0 : 1;
             const worseMachineIndex = betterMachineIndex === 0 ? 1 : 0;
             const betterMachineName = betterMachineIndex === 0 ? 'A' : 'B';
@@ -969,13 +968,14 @@
             const betterProb = gameState.machines[betterMachineIndex].prob;
             const worseProb = gameState.machines[worseMachineIndex].prob;
             
-            let message = `Game Over! You earned ${gameState.totalReward} out of ${gameState.totalPulls} pulls (${(avgReward * 100).toFixed(1)}%)`;
+            // Calculate expected reward with oracle policy (always pulling the better machine)
+            const expectedReward = (gameState.totalPulls * betterProb).toFixed(2);
             
-            // Calculate theoretical maximum (if always pulled the better machine)
-            const theoreticalMax = gameState.totalPulls * betterProb;
-            const efficiency = (gameState.totalReward / theoreticalMax * 100).toFixed(1);
+            // Calculate random regret
+            const randomRegret = (parseFloat(expectedReward) - gameState.totalReward).toFixed(2);
             
-            message += `<br>Efficiency: ${efficiency}% of theoretical maximum`;
+            let message = `Cumulative Reward / Expected Reward with Oracle Policy: ${gameState.totalReward} / ${expectedReward}`;
+            message += `<br>Random Regret: ${randomRegret}`;
             message += `<br><br>Revealed: Machine ${betterMachineName} had ${(betterProb * 100).toFixed(2)}% win rate, Machine ${worseMachineName} had ${(worseProb * 100).toFixed(2)}% win rate`;
             
             resultMessage.innerHTML = message;

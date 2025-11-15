@@ -331,7 +331,6 @@
                         <th>Policy</th>
                         <th>Final Avg Reward</th>
                         <th>Final Avg Regret</th>
-                        <th>Success Rate</th>
                     </tr>
                 </thead>
                 <tbody id="resultsTableBody">
@@ -742,28 +741,24 @@
             if (etcEnabled) {
                 const finalReward = runningAvgRewards.etc[runningAvgRewards.etc.length - 1];
                 const finalRegret = runningAvgRegrets.etc[runningAvgRegrets.etc.length - 1];
-                const successRate = (finalReward / totalPulls * 100).toFixed(2);
                 
                 const row = tbody.insertRow();
                 row.innerHTML = `
                     <td>Explore-Then-Commit</td>
                     <td>${finalReward.toFixed(2)}</td>
                     <td>${finalRegret.toFixed(2)}</td>
-                    <td>${successRate}%</td>
                 `;
             }
             
             if (ucbEnabled) {
                 const finalReward = runningAvgRewards.ucb[runningAvgRewards.ucb.length - 1];
                 const finalRegret = runningAvgRegrets.ucb[runningAvgRegrets.ucb.length - 1];
-                const successRate = (finalReward / totalPulls * 100).toFixed(2);
                 
                 const row = tbody.insertRow();
                 row.innerHTML = `
                     <td>UCB1</td>
                     <td>${finalReward.toFixed(2)}</td>
                     <td>${finalRegret.toFixed(2)}</td>
-                    <td>${successRate}%</td>
                 `;
             }
             
