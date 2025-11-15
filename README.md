@@ -27,9 +27,10 @@ Each machine displays:
 ### ⚙️ Flexible Configuration
 
 #### Random Probability Mode (Default)
-- Automatically assigns 30% and 60% win rates
-- Random allocation to Machine A or Machine B
-- Quick start for standard MAB scenarios
+- Each machine gets a win rate randomly sampled from a **uniform distribution (0-100%)**
+- Machine A and Machine B probabilities are independently sampled
+- Creates unique scenarios for each game session
+- Ideal for exploring MAB behavior across diverse probability distributions
 
 #### Custom Probability Mode
 - Set any two probabilities (0-100%)

@@ -549,7 +549,7 @@
             <div class="config-note">
                 <strong>Configuration Guide:</strong><br>
                 • <strong>Total Pulls Available:</strong> Set the number of times you can pull the slot machines (1-1000).<br>
-                • <strong>Random Probability (Yes):</strong> Each machine will be randomly assigned a 30% or 60% win rate.<br>
+                • <strong>Random Probability (Yes):</strong> Each machine will be randomly assigned a win rate sampled from a uniform distribution (0-100%).<br>
                 • <strong>Random Probability (No):</strong> You can customize the win probabilities for both machines.<br>
                 • <strong>Randomize Assignment (Yes):</strong> The two custom probabilities will be randomly allocated to Machine A and Machine B.<br>
                 • <strong>Randomize Assignment (No):</strong> Machine A gets Probability 1, Machine B gets Probability 2.
@@ -652,8 +652,10 @@
             let probs;
             
             if (randomProb === 'yes') {
-                // Randomly assign which machine gets which probability (30% or 60%)
-                probs = Math.random() < 0.5 ? [0.3, 0.6] : [0.6, 0.3];
+                // Randomly sample win probabilities from uniform distribution [0, 1]
+                const prob1 = Math.random(); // Random value between 0 and 1
+                const prob2 = Math.random(); // Random value between 0 and 1
+                probs = [prob1, prob2];
             } else {
                 // Use custom probabilities
                 const prob1 = parseFloat(document.getElementById('prob1').value) / 100;
