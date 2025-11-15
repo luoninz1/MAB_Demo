@@ -590,6 +590,20 @@
         </div>
 
         <div id="gameSection" style="display: none;">
+            <div class="config-row" style="margin-bottom: 20px;">
+                <label>Show UCB1 Value:</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="showUCB1" value="yes" onchange="toggleUCB1Display()">
+                        Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="showUCB1" value="no" checked onchange="toggleUCB1Display()">
+                        No
+                    </label>
+                </div>
+            </div>
+
             <div class="stats-bar">
                 <div class="stat-item">
                     <div class="stat-label">Pulls Remaining</div>
@@ -619,6 +633,10 @@
                             Sample Mean (wins/pulls):
                             <div class="sample-mean-formula" id="formula1">-</div>
                         </div>
+                        <div class="machine-stat ucb1-stat" id="ucb1-container-1" style="display: none;">
+                            UCB1 Value:
+                            <div class="sample-mean-formula" id="ucb1-formula1">-</div>
+                        </div>
                     </div>
                 </div>
 
@@ -638,6 +656,10 @@
                         <div class="machine-stat">
                             Sample Mean (wins/pulls):
                             <div class="sample-mean-formula" id="formula2">-</div>
+                        </div>
+                        <div class="machine-stat ucb1-stat" id="ucb1-container-2" style="display: none;">
+                            UCB1 Value:
+                            <div class="sample-mean-formula" id="ucb1-formula2">-</div>
                         </div>
                     </div>
                 </div>
@@ -669,6 +691,25 @@
                 customSection.style.display = 'block';
             } else {
                 customSection.style.display = 'none';
+            }
+        }
+
+        function toggleUCB1Display() {
+            const showUCB1 = document.querySelector('input[name="showUCB1"]:checked').value;
+            const ucb1Container1 = document.getElementById('ucb1-container-1');
+            const ucb1Container2 = document.getElementById('ucb1-container-2');
+            
+            if (showUCB1 === 'yes') {
+                ucb1Container1.style.display = 'block';
+                ucb1Container2.style.display = 'block';
+            } else {
+                ucb1Container1.style.display = 'none';
+                ucb1Container2.style.display = 'none';
+            }
+            
+            // Update display to show current UCB1 values if game is in progress
+            if (gameState.gameStarted) {
+                updateDisplay();
             }
         }
 
@@ -878,6 +919,8 @@
             document.getElementById('pullsRemaining').textContent = gameState.pullsRemaining;
             document.getElementById('totalReward').textContent = gameState.totalReward;
 
+            const totalPullsSoFar = gameState.totalPulls - gameState.pullsRemaining;
+
             gameState.machines.forEach((machine, index) => {
                 const machineNum = index + 1;
                 document.getElementById(`pulls${machineNum}`).textContent = machine.pulls;
@@ -892,6 +935,18 @@
                     formulaElement.textContent = `(${numerator}) / ${denominator} = ${result}`;
                 } else {
                     formulaElement.textContent = '-';
+                }
+                
+                // Update UCB1 formula display
+                const ucb1FormulaElement = document.getElementById(`ucb1-formula${machineNum}`);
+                if (machine.pulls > 0 && totalPullsSoFar > 0) {
+                    const sampleMean = machine.wins / machine.pulls;
+                    const explorationTerm = Math.sqrt(2 * Math.log(totalPullsSoFar) / machine.pulls);
+                    const ucb1Value = sampleMean + explorationTerm;
+                    
+                    ucb1FormulaElement.textContent = `${sampleMean.toFixed(2)} + sqrt(2*ln(${totalPullsSoFar})/${machine.pulls}) = ${ucb1Value.toFixed(2)}`;
+                } else {
+                    ucb1FormulaElement.textContent = '-';
                 }
             });
 
