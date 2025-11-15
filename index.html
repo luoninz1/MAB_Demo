@@ -860,7 +860,7 @@
             const efficiency = (gameState.totalReward / theoreticalMax * 100).toFixed(1);
             
             message += `<br>Efficiency: ${efficiency}% of theoretical maximum`;
-            message += `<br><br>Revealed: Machine ${betterMachineName} had ${(betterProb * 100)}% win rate, Machine ${worseMachineName} had ${(worseProb * 100)}% win rate`;
+            message += `<br><br>Revealed: Machine ${betterMachineName} had ${(betterProb * 100).toFixed(2)}% win rate, Machine ${worseMachineName} had ${(worseProb * 100).toFixed(2)}% win rate`;
             
             resultMessage.innerHTML = message;
             resultMessage.classList.add('show');
