@@ -92,6 +92,88 @@
             text-align: center;
         }
 
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .radio-group input[type="radio"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .custom-prob-section {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .prob-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .prob-input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .prob-input-group label {
+            font-size: 14px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .prob-input-group input {
+            width: 80px;
+        }
+
+        .randomize-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .randomize-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .config-note {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .config-note strong {
+            color: #333;
+        }
+
         .start-btn {
             background: #667eea;
             color: white;
@@ -330,6 +412,17 @@
             font-size: 18px;
         }
 
+        .sample-mean-formula {
+            font-size: 13px;
+            color: #555;
+            margin-top: 5px;
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
         .result-message {
             text-align: center;
             font-size: 24px;
@@ -412,6 +505,56 @@
                 <label for="totalPulls">Total Pulls Available:</label>
                 <input type="number" id="totalPulls" value="20" min="1" max="1000">
             </div>
+            
+            <div class="config-row">
+                <label>Random Probability:</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="randomProb" value="yes" checked onchange="toggleProbabilityConfig()">
+                        Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="randomProb" value="no" onchange="toggleProbabilityConfig()">
+                        No
+                    </label>
+                </div>
+            </div>
+
+            <div class="custom-prob-section" id="customProbSection" style="display: none;">
+                <div class="prob-inputs">
+                    <div class="prob-input-group">
+                        <label for="prob1">Probability 1 (%):</label>
+                        <input type="number" id="prob1" value="30" min="0" max="100" step="1">
+                    </div>
+                    <div class="prob-input-group">
+                        <label for="prob2">Probability 2 (%):</label>
+                        <input type="number" id="prob2" value="60" min="0" max="100" step="1">
+                    </div>
+                </div>
+                <div class="config-row">
+                    <label>Randomize Assignment:</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="randomAssign" value="yes">
+                            Yes
+                        </label>
+                        <label>
+                            <input type="radio" name="randomAssign" value="no" checked>
+                            No
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-note">
+                <strong>Configuration Guide:</strong><br>
+                • <strong>Total Pulls Available:</strong> Set the number of times you can pull the slot machines (1-1000).<br>
+                • <strong>Random Probability (Yes):</strong> Each machine will be randomly assigned a 30% or 60% win rate.<br>
+                • <strong>Random Probability (No):</strong> You can customize the win probabilities for both machines.<br>
+                • <strong>Randomize Assignment (Yes):</strong> The two custom probabilities will be randomly allocated to Machine A and Machine B.<br>
+                • <strong>Randomize Assignment (No):</strong> Machine A gets Probability 1, Machine B gets Probability 2.
+            </div>
+
             <button class="start-btn" onclick="startGame()">Start Game</button>
         </div>
 
@@ -439,9 +582,12 @@
                     </div>
                     <button class="pull-btn" onclick="pullMachine(1)">Pull!</button>
                     <div class="machine-stats">
-                        <div class="machine-stat">Pulls: <strong id="pulls1">0</strong></div>
-                        <div class="machine-stat">Wins: <strong id="wins1">0</strong></div>
-                        <div class="machine-stat">Sample Mean: <strong id="mean1">0.00</strong></div>
+                        <div class="machine-stat">Pulls (pull count): <strong id="pulls1">0</strong></div>
+                        <div class="machine-stat">Wins (cumulative reward): <strong id="wins1">0</strong></div>
+                        <div class="machine-stat">
+                            Sample Mean (wins/pulls):
+                            <div class="sample-mean-formula" id="formula1">-</div>
+                        </div>
                     </div>
                 </div>
 
@@ -456,9 +602,12 @@
                     </div>
                     <button class="pull-btn" onclick="pullMachine(2)">Pull!</button>
                     <div class="machine-stats">
-                        <div class="machine-stat">Pulls: <strong id="pulls2">0</strong></div>
-                        <div class="machine-stat">Wins: <strong id="wins2">0</strong></div>
-                        <div class="machine-stat">Sample Mean: <strong id="mean2">0.00</strong></div>
+                        <div class="machine-stat">Pulls (pull count): <strong id="pulls2">0</strong></div>
+                        <div class="machine-stat">Wins (cumulative reward): <strong id="wins2">0</strong></div>
+                        <div class="machine-stat">
+                            Sample Mean (wins/pulls):
+                            <div class="sample-mean-formula" id="formula2">-</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -475,11 +624,22 @@
             pullsRemaining: 0,
             totalReward: 0,
             machines: [
-                { prob: 0.3, pulls: 0, wins: 0 },
-                { prob: 0.6, pulls: 0, wins: 0 }
+                { prob: 0.3, pulls: 0, wins: 0, rewardHistory: [] },
+                { prob: 0.6, pulls: 0, wins: 0, rewardHistory: [] }
             ],
             gameStarted: false
         };
+
+        function toggleProbabilityConfig() {
+            const randomProb = document.querySelector('input[name="randomProb"]:checked').value;
+            const customSection = document.getElementById('customProbSection');
+            
+            if (randomProb === 'no') {
+                customSection.style.display = 'block';
+            } else {
+                customSection.style.display = 'none';
+            }
+        }
 
         function startGame() {
             const totalPulls = parseInt(document.getElementById('totalPulls').value);
@@ -488,15 +648,41 @@
                 return;
             }
 
-            // Randomly assign which machine gets which probability
-            const probs = Math.random() < 0.5 ? [0.3, 0.6] : [0.6, 0.3];
+            const randomProb = document.querySelector('input[name="randomProb"]:checked').value;
+            let probs;
+            
+            if (randomProb === 'yes') {
+                // Randomly assign which machine gets which probability (30% or 60%)
+                probs = Math.random() < 0.5 ? [0.3, 0.6] : [0.6, 0.3];
+            } else {
+                // Use custom probabilities
+                const prob1 = parseFloat(document.getElementById('prob1').value) / 100;
+                const prob2 = parseFloat(document.getElementById('prob2').value) / 100;
+                
+                // Validate probabilities
+                if (prob1 < 0 || prob1 > 1 || prob2 < 0 || prob2 > 1) {
+                    alert('Please enter valid probabilities between 0 and 100');
+                    return;
+                }
+                
+                // Check if randomize assignment is selected
+                const randomAssign = document.querySelector('input[name="randomAssign"]:checked').value;
+                
+                if (randomAssign === 'yes') {
+                    // Randomly assign probabilities to machines
+                    probs = Math.random() < 0.5 ? [prob1, prob2] : [prob2, prob1];
+                } else {
+                    // Direct assignment: Machine A gets prob1, Machine B gets prob2
+                    probs = [prob1, prob2];
+                }
+            }
 
             gameState.totalPulls = totalPulls;
             gameState.pullsRemaining = totalPulls;
             gameState.totalReward = 0;
             gameState.machines = [
-                { prob: probs[0], pulls: 0, wins: 0 },
-                { prob: probs[1], pulls: 0, wins: 0 }
+                { prob: probs[0], pulls: 0, wins: 0, rewardHistory: [] },
+                { prob: probs[1], pulls: 0, wins: 0, rewardHistory: [] }
             ];
             gameState.gameStarted = true;
 
@@ -549,7 +735,7 @@
             document.querySelectorAll('.pull-btn').forEach(btn => btn.disabled = true);
             
             // Spin duration with staggered stops
-            const spinDurations = [600, 900, 1200];
+            const spinDurations = [100, 200, 300];
             const finalSymbols = [];
             
             // Determine win/loss with Bernoulli trial
@@ -603,6 +789,9 @@
                         if (win) {
                             machine.wins++;
                             gameState.totalReward++;
+                            machine.rewardHistory.push(1);
+                        } else {
+                            machine.rewardHistory.push(0);
                         }
                         
                         // Trigger screen flash based on win/loss
@@ -631,8 +820,16 @@
                 document.getElementById(`pulls${machineNum}`).textContent = machine.pulls;
                 document.getElementById(`wins${machineNum}`).textContent = machine.wins;
                 
-                const mean = machine.pulls > 0 ? (machine.wins / machine.pulls) : 0;
-                document.getElementById(`mean${machineNum}`).textContent = mean.toFixed(2);
+                // Update formula display
+                const formulaElement = document.getElementById(`formula${machineNum}`);
+                if (machine.pulls > 0) {
+                    const numerator = machine.rewardHistory.join(' + ');
+                    const denominator = machine.pulls;
+                    const result = (machine.wins / machine.pulls).toFixed(2);
+                    formulaElement.textContent = `(${numerator}) / ${denominator} = ${result}`;
+                } else {
+                    formulaElement.textContent = '-';
+                }
             });
 
             // Disable machines if no pulls remaining
@@ -648,8 +845,11 @@
             
             // Determine which machine was better
             const betterMachineIndex = gameState.machines[0].prob > gameState.machines[1].prob ? 0 : 1;
+            const worseMachineIndex = betterMachineIndex === 0 ? 1 : 0;
             const betterMachineName = betterMachineIndex === 0 ? 'A' : 'B';
-            const betterProb = Math.max(gameState.machines[0].prob, gameState.machines[1].prob);
+            const worseMachineName = betterMachineIndex === 0 ? 'B' : 'A';
+            const betterProb = gameState.machines[betterMachineIndex].prob;
+            const worseProb = gameState.machines[worseMachineIndex].prob;
             
             let message = `Game Over! You earned ${gameState.totalReward} out of ${gameState.totalPulls} pulls (${(avgReward * 100).toFixed(1)}%)`;
             
@@ -658,7 +858,7 @@
             const efficiency = (gameState.totalReward / theoreticalMax * 100).toFixed(1);
             
             message += `<br>Efficiency: ${efficiency}% of theoretical maximum`;
-            message += `<br><br>Revealed: Machine ${betterMachineName} had ${(betterProb * 100)}% win rate, Machine ${betterMachineName === 'A' ? 'B' : 'A'} had ${((1 - betterProb + 0.3) * 100)}% win rate`;
+            message += `<br><br>Revealed: Machine ${betterMachineName} had ${(betterProb * 100)}% win rate, Machine ${worseMachineName} had ${(worseProb * 100)}% win rate`;
             
             resultMessage.innerHTML = message;
             resultMessage.classList.add('show');
