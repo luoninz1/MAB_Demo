@@ -64,6 +64,45 @@ When all pulls are used, the game reveals:
 3. Configure your game settings
 4. Click "Start Game" and begin playing!
 
+### URL Parameters for Direct Configuration
+
+You can configure the game by passing URL parameters:
+
+#### For Main Game (`game.html`)
+```
+game.html?totalPulls=50&randomProb=no&prob1=30&prob2=70&randomAssign=no
+```
+
+**Available Parameters:**
+- `totalPulls`: Number of pulls (default: 20)
+- `randomProb`: Use random probabilities - `yes` or `no` (default: yes)
+- `prob1`: First probability percentage (0-100)
+- `prob2`: Second probability percentage (0-100)
+- `randomAssign`: Randomly assign probabilities to machines - `yes` or `no` (default: no)
+
+#### For Policy Comparison (`policy_comparison.html`)
+```
+policy_comparison.html?totalPulls=100&randomProb=yes&etcExplore=10&numSimulations=500
+```
+
+**Available Parameters:**
+- `totalPulls`: Number of pulls per simulation (default: 20)
+- `randomProb`: Use random probabilities - `yes` or `no` (default: yes)
+- `prob1`: First probability percentage (0-100, if randomProb=no)
+- `prob2`: Second probability percentage (0-100, if randomProb=no)
+- `randomAssign`: Randomly assign probabilities - `yes` or `no` (default: no)
+- `etcExplore`: Initial explores per arm for ETC algorithm (default: 5)
+- `numSimulations`: Number of simulations to run (default: 100)
+
+**Example URLs:**
+```
+# Game with custom probabilities
+game.html?totalPulls=50&randomProb=no&prob1=40&prob2=80&randomAssign=no
+
+# Policy comparison with 1000 simulations and 10 explores per arm
+policy_comparison.html?totalPulls=20&randomProb=yes&etcExplore=10&numSimulations=1000
+```
+
 ## 🎲 How to Play
 
 1. **Configure the Game**

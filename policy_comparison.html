@@ -347,6 +347,8 @@
         let prob1 = urlParams.get('prob1');
         let prob2 = urlParams.get('prob2');
         const randomAssign = urlParams.get('randomAssign') || 'no';
+        const etcExploreParam = parseInt(urlParams.get('etcExplore')) || 5;
+        const numSimulationsParam = parseInt(urlParams.get('numSimulations')) || 100;
 
         let machineProbs = [0, 0];
 
@@ -365,6 +367,10 @@
                 machineProbs = [prob1, prob2];
             }
         }
+
+        // Set values from URL parameters
+        document.getElementById('etcExplore').value = etcExploreParam;
+        document.getElementById('numSimulations').value = numSimulationsParam;
 
         // Display configuration
         document.getElementById('totalPullsDisplay').textContent = totalPulls;
