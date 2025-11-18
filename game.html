@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Armed Bandit Game - Play</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1100px;
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 10px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                padding: 40px;
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+        
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .config-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .config-row label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .radio-group input[type="radio"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .machines-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .machine {
+            flex: 1;
+            min-width: 0;
+            max-width: 450px;
+            background: linear-gradient(145deg, #f0f0f0, #ffffff);
+            border-radius: 15px;
+            padding: 30px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        @media (max-width: 768px) {
+            .machines-container {
+                gap: 10px;
+            }
+            
+            .machine {
+                padding: 20px 10px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .machines-container {
+                gap: 8px;
+            }
+            
+            .machine {
+                padding: 15px 8px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .machines-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .machine {
+                min-width: 100%;
+                max-width: 100%;
+                padding: 20px 15px;
+            }
+        }
+
+        .machine:hover {
+            transform: translateY(-5px);
+        }
+
+        .machine.disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .machine-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .slot-machine {
+            width: 100%;
+            max-width: 220px;
+            background: linear-gradient(145deg, #ff6b6b, #ee5a6f);
+            border-radius: 15px;
+            margin: 0 auto 20px;
+            padding: 20px 15px;
+            box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.2), 0 10px 30px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        @media (max-width: 768px) {
+            .slot-machine {
+                max-width: 200px;
+                padding: 15px 10px;
+            }
+        }
+
+        .machine:nth-child(2) .slot-machine {
+            background: linear-gradient(145deg, #4ecdc4, #44a08d);
+        }
+
+        .slot-machine:hover {
+            transform: scale(1.02);
+            box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.3), 0 12px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .slot-machine:active {
+            transform: scale(0.98);
+        }
+
+        .reels-container {
+            display: flex;
+            gap: 10px;
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .reel {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 45px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .reel {
+                height: 70px;
+                font-size: 38px;
+            }
+        }
+
+        .reel-symbol {
+            transition: transform 0.1s;
+        }
+
+        .reel.spinning .reel-symbol {
+            animation: reelSpin 0.1s linear infinite;
+        }
+
+        @keyframes reelSpin {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100%); }
+        }
+
+        .pull-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .pull-btn:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .pull-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .machine-stats {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .machine-stat {
+            margin: 8px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .machine-stat strong {
+            color: #333;
+            font-size: 18px;
+        }
+
+        .sample-mean-formula {
+            font-size: 13px;
+            color: #555;
+            margin-top: 5px;
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .result-message {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-message.show {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reset-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin: 20px auto 0;
+        }
+
+        .reset-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .screen-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+
+        .screen-flash.flash-green {
+            background-color: rgba(40, 167, 69, 0.6);
+            animation: flashEffect 0.5s ease-out;
+        }
+
+        .screen-flash.flash-red {
+            background-color: rgba(220, 53, 69, 0.6);
+            animation: flashEffect 0.5s ease-out;
+        }
+
+        @keyframes flashEffect {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="screen-flash" id="screenFlash"></div>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Configuration</a>
+        
+        <h1>🎰 Multi-Armed Bandit Game 🎰</h1>
+        <p class="subtitle">Two slot machines with different win probabilities. Can you maximize your reward?</p>
+        
+        <div class="config-row">
+            <label>Show UCB1 Value:</label>
+            <div class="radio-group">
+                <label>
+                    <input type="radio" name="showUCB1" value="yes" onchange="toggleUCB1Display()">
+                    Yes
+                </label>
+                <label>
+                    <input type="radio" name="showUCB1" value="no" checked onchange="toggleUCB1Display()">
+                    No
+                </label>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-label">Pulls Remaining</div>
+                <div class="stat-value" id="pullsRemaining">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Total Reward</div>
+                <div class="stat-value" id="totalReward">0</div>
+            </div>
+        </div>
+
+        <div class="machines-container">
+            <div class="machine" id="machine1">
+                <div class="machine-title">Machine A</div>
+                <div class="slot-machine" onclick="pullMachine(1)">
+                    <div class="reels-container">
+                        <div class="reel" id="reel1-1"><span class="reel-symbol">🎰</span></div>
+                        <div class="reel" id="reel1-2"><span class="reel-symbol">🎰</span></div>
+                        <div class="reel" id="reel1-3"><span class="reel-symbol">🎰</span></div>
+                    </div>
+                </div>
+                <button class="pull-btn" onclick="pullMachine(1)">Pull!</button>
+                <div class="machine-stats">
+                    <div class="machine-stat">Pulls (pull count): <strong id="pulls1">0</strong></div>
+                    <div class="machine-stat">Wins (cumulative reward): <strong id="wins1">0</strong></div>
+                    <div class="machine-stat">
+                        Sample Mean (wins/pulls):
+                        <div class="sample-mean-formula" id="formula1">-</div>
+                    </div>
+                    <div class="machine-stat ucb1-stat" id="ucb1-container-1" style="display: none;">
+                        UCB1 Value:
+                        <div class="sample-mean-formula" id="ucb1-formula1">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="machine" id="machine2">
+                <div class="machine-title">Machine B</div>
+                <div class="slot-machine" onclick="pullMachine(2)">
+                    <div class="reels-container">
+                        <div class="reel" id="reel2-1"><span class="reel-symbol">🎰</span></div>
+                        <div class="reel" id="reel2-2"><span class="reel-symbol">🎰</span></div>
+                        <div class="reel" id="reel2-3"><span class="reel-symbol">🎰</span></div>
+                    </div>
+                </div>
+                <button class="pull-btn" onclick="pullMachine(2)">Pull!</button>
+                <div class="machine-stats">
+                    <div class="machine-stat">Pulls (pull count): <strong id="pulls2">0</strong></div>
+                    <div class="machine-stat">Wins (cumulative reward): <strong id="wins2">0</strong></div>
+                    <div class="machine-stat">
+                        Sample Mean (wins/pulls):
+                        <div class="sample-mean-formula" id="formula2">-</div>
+                    </div>
+                    <div class="machine-stat ucb1-stat" id="ucb1-container-2" style="display: none;">
+                        UCB1 Value:
+                        <div class="sample-mean-formula" id="ucb1-formula2">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-message" id="resultMessage"></div>
+        
+        <button class="reset-btn" onclick="resetGame()">New Game</button>
+    </div>
+
+    <script>
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const totalPulls = parseInt(urlParams.get('totalPulls')) || 20;
+        const randomProb = urlParams.get('randomProb') || 'yes';
+        const prob1Param = urlParams.get('prob1');
+        const prob2Param = urlParams.get('prob2');
+        const randomAssign = urlParams.get('randomAssign') || 'no';
+
+        // Initialize game state
+        let gameState = {
+            totalPulls: totalPulls,
+            pullsRemaining: totalPulls,
+            totalReward: 0,
+            machines: [],
+            gameStarted: false
+        };
+
+        const symbols = ['🍒', '🍋', '🍊', '🍉', '⭐', '💎', '7️⃣'];
+
+        // Initialize probabilities based on configuration
+        function initializeProbabilities() {
+            let probs;
+            
+            if (randomProb === 'yes') {
+                // Randomly sample win probabilities from uniform distribution [0, 1]
+                probs = [Math.random(), Math.random()];
+            } else {
+                // Use custom probabilities
+                const prob1 = parseFloat(prob1Param) / 100;
+                const prob2 = parseFloat(prob2Param) / 100;
+                
+                if (randomAssign === 'yes') {
+                    // Randomly assign probabilities to machines
+                    probs = Math.random() < 0.5 ? [prob1, prob2] : [prob2, prob1];
+                } else {
+                    // Direct assignment: Machine A gets prob1, Machine B gets prob2
+                    probs = [prob1, prob2];
+                }
+            }
+            
+            return probs;
+        }
+
+        // Start the game
+        function startGame() {
+            const probs = initializeProbabilities();
+            
+            gameState.machines = [
+                { prob: probs[0], pulls: 0, wins: 0, rewardHistory: [] },
+                { prob: probs[1], pulls: 0, wins: 0, rewardHistory: [] }
+            ];
+            gameState.gameStarted = true;
+            
+            updateDisplay();
+        }
+
+        function toggleUCB1Display() {
+            const showUCB1 = document.querySelector('input[name="showUCB1"]:checked').value;
+            const ucb1Container1 = document.getElementById('ucb1-container-1');
+            const ucb1Container2 = document.getElementById('ucb1-container-2');
+            
+            if (showUCB1 === 'yes') {
+                ucb1Container1.style.display = 'block';
+                ucb1Container2.style.display = 'block';
+            } else {
+                ucb1Container1.style.display = 'none';
+                ucb1Container2.style.display = 'none';
+            }
+            
+            // Update display to show current UCB1 values if game is in progress
+            if (gameState.gameStarted) {
+                updateDisplay();
+            }
+        }
+
+        function flashScreen(isWin) {
+            const flashElement = document.getElementById('screenFlash');
+            
+            // Remove any existing flash classes
+            flashElement.classList.remove('flash-green', 'flash-red');
+            
+            // Trigger reflow to restart animation
+            void flashElement.offsetWidth;
+            
+            // Add the appropriate flash class
+            if (isWin) {
+                flashElement.classList.add('flash-green');
+            } else {
+                flashElement.classList.add('flash-red');
+            }
+            
+            // Remove the class after animation completes
+            setTimeout(() => {
+                flashElement.classList.remove('flash-green', 'flash-red');
+            }, 500);
+        }
+
+        function pullMachine(machineNum) {
+            if (gameState.pullsRemaining <= 0) {
+                return;
+            }
+
+            const machine = gameState.machines[machineNum - 1];
+            const reels = [
+                document.getElementById(`reel${machineNum}-1`),
+                document.getElementById(`reel${machineNum}-2`),
+                document.getElementById(`reel${machineNum}-3`)
+            ];
+            
+            // Start spinning animation
+            reels.forEach(reel => reel.classList.add('spinning'));
+            
+            // Disable buttons during spin
+            document.querySelectorAll('.pull-btn').forEach(btn => btn.disabled = true);
+            
+            // Spin duration with staggered stops
+            const spinDurations = [100, 200, 300];
+            const finalSymbols = [];
+            
+            // Determine win/loss with Bernoulli trial
+            const win = Math.random() < machine.prob;
+            
+            reels.forEach((reel, index) => {
+                // Show random symbols while spinning
+                const spinInterval = setInterval(() => {
+                    const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                    reel.querySelector('.reel-symbol').textContent = randomSymbol;
+                }, 100);
+                
+                setTimeout(() => {
+                    clearInterval(spinInterval);
+                    reel.classList.remove('spinning');
+                    
+                    // Set final symbol
+                    let finalSymbol;
+                    if (win) {
+                        // All three reels show the same symbol for a win
+                        if (index === 0) {
+                            finalSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                            finalSymbols[0] = finalSymbol;
+                        } else {
+                            finalSymbol = finalSymbols[0];
+                        }
+                    } else {
+                        // Make sure at least one reel is different for a loss
+                        if (index === 0) {
+                            finalSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                            finalSymbols[0] = finalSymbol;
+                        } else if (index === 1) {
+                            finalSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                            finalSymbols[1] = finalSymbol;
+                        } else {
+                            // Make sure third reel doesn't match if first two match
+                            if (finalSymbols[0] === finalSymbols[1]) {
+                                const differentSymbols = symbols.filter(s => s !== finalSymbols[0]);
+                                finalSymbol = differentSymbols[Math.floor(Math.random() * differentSymbols.length)];
+                            } else {
+                                finalSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                            }
+                        }
+                    }
+                    
+                    reel.querySelector('.reel-symbol').textContent = finalSymbol;
+                    
+                    // Update stats after last reel stops
+                    if (index === 2) {
+                        machine.pulls++;
+                        if (win) {
+                            machine.wins++;
+                            gameState.totalReward++;
+                            machine.rewardHistory.push(1);
+                        } else {
+                            machine.rewardHistory.push(0);
+                        }
+                        
+                        // Trigger screen flash based on win/loss
+                        flashScreen(win);
+                        
+                        gameState.pullsRemaining--;
+                        updateDisplay();
+                        
+                        // Re-enable buttons
+                        document.querySelectorAll('.pull-btn').forEach(btn => btn.disabled = false);
+                        
+                        if (gameState.pullsRemaining === 0) {
+                            endGame();
+                        }
+                    }
+                }, spinDurations[index]);
+            });
+        }
+
+        function updateDisplay() {
+            document.getElementById('pullsRemaining').textContent = gameState.pullsRemaining;
+            document.getElementById('totalReward').textContent = gameState.totalReward;
+
+            const totalPullsSoFar = gameState.totalPulls - gameState.pullsRemaining;
+
+            gameState.machines.forEach((machine, index) => {
+                const machineNum = index + 1;
+                document.getElementById(`pulls${machineNum}`).textContent = machine.pulls;
+                document.getElementById(`wins${machineNum}`).textContent = machine.wins;
+                
+                // Update formula display
+                const formulaElement = document.getElementById(`formula${machineNum}`);
+                if (machine.pulls > 0) {
+                    const numerator = machine.rewardHistory.join(' + ');
+                    const denominator = machine.pulls;
+                    const result = (machine.wins / machine.pulls).toFixed(2);
+                    formulaElement.textContent = `(${numerator}) / ${denominator} = ${result}`;
+                } else {
+                    formulaElement.textContent = '-';
+                }
+                
+                // Update UCB1 formula display
+                const ucb1FormulaElement = document.getElementById(`ucb1-formula${machineNum}`);
+                if (machine.pulls > 0 && totalPullsSoFar > 0) {
+                    const sampleMean = machine.wins / machine.pulls;
+                    const explorationTerm = Math.sqrt(2 * Math.log(totalPullsSoFar) / machine.pulls);
+                    const ucb1Value = sampleMean + explorationTerm;
+                    
+                    ucb1FormulaElement.textContent = `${sampleMean.toFixed(2)} + sqrt(2*ln(${totalPullsSoFar})/${machine.pulls}) = ${ucb1Value.toFixed(2)}`;
+                } else {
+                    ucb1FormulaElement.textContent = '-';
+                }
+            });
+
+            // Disable machines if no pulls remaining
+            if (gameState.pullsRemaining === 0) {
+                document.getElementById('machine1').classList.add('disabled');
+                document.getElementById('machine2').classList.add('disabled');
+            }
+        }
+
+        function endGame() {
+            const resultMessage = document.getElementById('resultMessage');
+            
+            // Determine which machine was better (oracle policy)
+            const betterMachineIndex = gameState.machines[0].prob > gameState.machines[1].prob ? 0 : 1;
+            const worseMachineIndex = betterMachineIndex === 0 ? 1 : 0;
+            const betterMachineName = betterMachineIndex === 0 ? 'A' : 'B';
+            const worseMachineName = betterMachineIndex === 0 ? 'B' : 'A';
+            const betterProb = gameState.machines[betterMachineIndex].prob;
+            const worseProb = gameState.machines[worseMachineIndex].prob;
+            
+            // Calculate expected reward with oracle policy (always pulling the better machine)
+            const expectedReward = (gameState.totalPulls * betterProb).toFixed(2);
+            
+            // Calculate random regret
+            const randomRegret = (parseFloat(expectedReward) - gameState.totalReward).toFixed(2);
+            
+            let message = `Cumulative Reward / Expected Reward with Oracle Policy: ${gameState.totalReward} / ${expectedReward}`;
+            message += `<br>Random Regret: ${randomRegret}`;
+            message += `<br><br>Revealed: Machine ${betterMachineName} had ${(betterProb * 100).toFixed(2)}% win rate, Machine ${worseMachineName} had ${(worseProb * 100).toFixed(2)}% win rate`;
+            
+            resultMessage.innerHTML = message;
+            resultMessage.classList.add('show');
+        }
+
+        function resetGame() {
+            window.location.href = 'index.html';
+        }
+
+        // Start the game when page loads
+        startGame();
+    </script>
+</body>
+</html>
